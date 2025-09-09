@@ -6,7 +6,7 @@ A comprehensive machine learning pipeline for virtual screening of natural produ
 ### Overview
 This pipeline implements a complete virtual screening workflow including SMILES processing, data balancing, machine learning model training, virtual screening, and toxicity assessment. The system is specifically designed for colorectal cancer drug discovery using validated cell line models.
 
-###Features
+### Features
 #### - Multi-step ML Pipeline: From raw SMILES to validated predictions
 #### - Data Balancing: Automated handling of imbalanced datasets
 #### - Multiple Algorithms: Support for RF, DTREE, KNN, BNB, GNB
@@ -14,3 +14,9 @@ This pipeline implements a complete virtual screening workflow including SMILES 
 #### - Virtual Screening: Large-scale compound screening capabilities
 #### - Toxicity Assessment: Safety evaluation of hit compounds
 #### - Natural Product Focus: COCONUT, LOTUS, and FOODB database support
+
+### Step 1: SMILES Processing and Data Balancing
+'''bash
+python Step1SmilesBalancingPartition.py -i input_file.txt -p Step1ParamFile.txt
+'''
+
