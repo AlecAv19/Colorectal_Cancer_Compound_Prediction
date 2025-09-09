@@ -105,9 +105,9 @@ class FreshDECOYGenerator:
         self.descriptor_names = [name for name, func in working_descriptors]
         self.descriptor_functions = [func for name, func in working_descriptors]
         
-        print(f"✅ Validated descriptors: {len(self.descriptor_names)}")
-        print(f"🚫 Excluded problematic: {len(excluded_descriptors)}")
-        print(f"⚠ Failed validation: {len(failed_descriptors)}")
+        print(f"Validated descriptors: {len(self.descriptor_names)}")
+        print(f"Excluded problematic: {len(excluded_descriptors)}")
+        print(f"Failed validation: {len(failed_descriptors)}")
         
         # Show sample of working descriptors
         print(f"Sample validated descriptors: {self.descriptor_names[:10]}")
@@ -236,7 +236,7 @@ class FreshDECOYGenerator:
         """
         Load DECOY SMILES from existing data or generate if needed
         """
-        print("\n📁 LOADING DECOY SMILES DATA")
+        print("\n LOADING DECOY SMILES DATA")
         print("=" * 35)
         
         # Look for existing DECOY files
@@ -265,7 +265,7 @@ class FreshDECOYGenerator:
                                 decoy_data = df
                                 smiles_col = smiles_cols[0]
                                 id_col = id_cols[0]
-                                print(f"✅ Found DECOY data in: {file}")
+                                print(f" Found DECOY data in: {file}")
                                 print(f"   SMILES column: {smiles_col}")
                                 print(f"   ID column: {id_col}")
                                 break
@@ -293,7 +293,7 @@ class FreshDECOYGenerator:
         compound_ids = decoy_data.loc[smiles_data.index, id_col].tolist()
         smiles_list = smiles_data.tolist()
         
-        print(f"📊 Found {len(smiles_list)} DECOY compounds with SMILES")
+        print(f" Found {len(smiles_list)} DECOY compounds with SMILES")
         
         # Sample validation
         sample_smiles = smiles_list[:3]
@@ -307,7 +307,7 @@ class FreshDECOYGenerator:
         """
         Generate fresh, validated descriptors for all DECOY compounds
         """
-        print(f"\n🧪 GENERATING FRESH DESCRIPTORS")
+        print(f"\n GENERATING FRESH DESCRIPTORS")
         print("=" * 35)
         
         print(f"Processing {len(smiles_list)} compounds...")
@@ -350,8 +350,8 @@ class FreshDECOYGenerator:
         successful = sum(1 for r in processing_results if r['success'])
         failed = len(processing_results) - successful
         
-        print(f"✅ Successful: {successful}/{len(processing_results)} ({successful/len(processing_results)*100:.1f}%)")
-        print(f"❌ Failed: {failed}")
+        print(f" Successful: {successful}/{len(processing_results)} ({successful/len(processing_results)*100:.1f}%)")
+        print(f" Failed: {failed}")
         print(f"⚠ Total warnings: {len(all_warnings)}")
         
         # Descriptor statistics
@@ -381,7 +381,7 @@ class FreshDECOYGenerator:
         else:
             quality_status = "NEEDS_REVIEW"
         
-        print(f"✅ Overall quality: {quality_status}")
+        print(f" Overall quality: {quality_status}")
         
         self.quality_stats = {
             'total_compounds': len(processing_results),
@@ -421,9 +421,9 @@ class FreshDECOYGenerator:
         # Combine with descriptors
         enhanced_dataset = pd.concat([metadata_df, descriptor_df], axis=1)
         
-        print(f"✅ Enhanced dataset shape: {enhanced_dataset.shape}")
-        print(f"📋 Metadata columns: {len(metadata_df.columns)}")
-        print(f"🧪 Descriptor columns: {len(descriptor_df.columns)}")
+        print(f" Enhanced dataset shape: {enhanced_dataset.shape}")
+        print(f" Metadata columns: {len(metadata_df.columns)}")
+        print(f" Descriptor columns: {len(descriptor_df.columns)}")
         
         return enhanced_dataset
     
@@ -473,10 +473,10 @@ class FreshDECOYGenerator:
                 warnings_df = pd.DataFrame({'Warning': all_warnings})
                 warnings_df.to_excel(writer, sheet_name='Warnings', index=False)
         
-        print(f"✅ Fresh DECOY data saved to: {output_file}")
+        print(f" Fresh DECOY data saved to: {output_file}")
         
         # Show sample results
-        print(f"\n📋 SAMPLE FRESH DESCRIPTORS (first 3 compounds):")
+        print(f"\n SAMPLE FRESH DESCRIPTORS (first 3 compounds):")
         sample_descriptors = ['MolWt', 'MolLogP', 'TPSA', 'NumHDonors', 'NumHAcceptors']
         available_descriptors = [d for d in sample_descriptors if d in self.descriptor_names]
         
@@ -496,7 +496,7 @@ class FreshDECOYGenerator:
         """
         Complete fresh DECOY generation pipeline
         """
-        print("🚀 FRESH DECOY DESCRIPTOR GENERATION")
+        print(" FRESH DECOY DESCRIPTOR GENERATION")
         print("=" * 40)
         
         # Load SMILES data
@@ -521,18 +521,18 @@ class FreshDECOYGenerator:
             enhanced_dataset, processing_results, all_warnings
         )
         
-        print(f"\n🎉 FRESH DECOY GENERATION COMPLETE!")
+        print(f"\n FRESH DECOY GENERATION COMPLETE")
         print("=" * 40)
-        print(f"✅ Generated descriptors for {self.quality_stats['successful']} compounds")
-        print(f"✅ Quality status: {self.quality_stats['quality_status']}")
-        print(f"✅ Ready for virtual screening!")
-        print(f"📁 Output file: {output_file}")
+        print(f" Generated descriptors for {self.quality_stats['successful']} compounds")
+        print(f" Quality status: {self.quality_stats['quality_status']}")
+        print(f" Ready for virtual screening!")
+        print(f" Output file: {output_file}")
         
-        print(f"\n🎯 NEXT STEPS:")
-        print("1. ✅ Use the fresh data for virtual screening")
-        print("2. 🔍 Review Quality_Summary sheet for validation")
-        print("3. 🚀 Run virtual screening with clean descriptors")
-        print("4. 📊 Compare results with previous attempts")
+        print(f"\n NEXT STEPS:")
+        print("1.  Use the fresh data for virtual screening")
+        print("2.  Review Quality_Summary sheet for validation")
+        print("3.  Run virtual screening with clean descriptors")
+        print("4.  Compare results with previous attempts")
         
         return enhanced_dataset, output_file
 
@@ -540,7 +540,7 @@ def main():
     """
     Main function to generate fresh DECOY descriptors
     """
-    print("🧪 FRESH HIGH-QUALITY DECOY GENERATOR")
+    print(" FRESH HIGH-QUALITY DECOY GENERATOR")
     print("=" * 40)
     
     generator = FreshDECOYGenerator()
@@ -549,17 +549,17 @@ def main():
     if result is not None:
         enhanced_dataset, output_file = result
         
-        print(f"\n💡 ADVANTAGES OF FRESH DATA:")
+        print(f"\n ADVANTAGES OF FRESH DATA:")
         print("=" * 35)
-        print("✅ No Excel overflow errors")
-        print("✅ Validated descriptor ranges")
-        print("✅ Consistent calculation methodology")
-        print("✅ Quality-controlled values")
-        print("✅ Ready for reliable virtual screening")
+        print(" No Excel overflow errors")
+        print(" Validated descriptor ranges")
+        print(" Consistent calculation methodology")
+        print(" Quality-controlled values")
+        print(" Ready for reliable virtual screening")
         
         return True
     else:
-        print(f"\n❌ Fresh generation failed")
+        print(f"\n Fresh generation failed")
         return False
 
 if __name__ == "__main__":
