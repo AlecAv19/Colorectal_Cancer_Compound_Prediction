@@ -45,7 +45,7 @@ class SimpleModelComparison:
         result_files = glob.glob("VS_Results_*.xlsx")
         result_files.sort()
         
-        print(f"📂 Found {len(result_files)} results files:")
+        print(f" Found {len(result_files)} results files:")
         
         loaded_results = {}
         
@@ -80,12 +80,12 @@ class SimpleModelComparison:
                         continue
                 
                 if df is None:
-                    print(f"      ❌ Could not load")
+                    print(f"       Could not load")
                     continue
                 
                 # Validate required columns
                 if 'Probability' not in df.columns or 'Compound_ID' not in df.columns:
-                    print(f"      ❌ Missing required columns")
+                    print(f"       Missing required columns")
                     continue
                 
                 # Store results
@@ -97,18 +97,18 @@ class SimpleModelComparison:
                     'description': self.cell_line_info.get(model_id, {}).get('description', 'Unknown')
                 }
                 
-                print(f"      ✅ Loaded: {df.shape[0]:,} compounds")
+                print(f"       Loaded: {df.shape[0]:,} compounds")
                 
             except Exception as e:
-                print(f"      ❌ Error: {e}")
+                print(f"       Error: {e}")
         
         self.results_data = loaded_results
-        print(f"\n✅ Successfully loaded {len(loaded_results)} model results")
+        print(f"\n Successfully loaded {len(loaded_results)} model results")
         return loaded_results
     
     def analyze_all_models(self):
         """Comprehensive analysis of all models"""
-        print(f"\n📊 COMPREHENSIVE MODEL ANALYSIS")
+        print(f"\n COMPREHENSIVE MODEL ANALYSIS")
         print("=" * 35)
         
         analysis_results = []
@@ -131,7 +131,7 @@ class SimpleModelComparison:
             max_prob = df['Probability'].max()
             prob_range = max_prob - min_prob
             
-            print(f"📊 Basic Statistics:")
+            print(f" Basic Statistics:")
             print(f"   Total compounds: {total_compounds:,}")
             print(f"   Active predictions: {active_predictions:,} ({active_percentage:.1f}%)")
             print(f"   Score range: {min_prob:.3f} - {max_prob:.3f} (range: {prob_range:.3f})")
@@ -142,7 +142,7 @@ class SimpleModelComparison:
             p90 = df['Probability'].quantile(0.90)
             p75 = df['Probability'].quantile(0.75)
             
-            print(f"📈 Percentile Thresholds:")
+            print(f" Percentile Thresholds:")
             print(f"   95th percentile: {p95:.3f}")
             print(f"   90th percentile: {p90:.3f}")
             print(f"   75th percentile: {p75:.3f}")
@@ -156,7 +156,7 @@ class SimpleModelComparison:
             known_compounds = df[df['Compound_ID'].str.contains('|'.join(known_patterns), case=False, na=False)]
             n_known = len(known_compounds)
             
-            print(f"💊 Known Compounds Analysis:")
+            print(f" Known Compounds Analysis:")
             if n_known > 0:
                 known_active = known_compounds['Active'].sum() if 'Active' in known_compounds.columns else (known_compounds['Probability'] >= 0.5).sum()
                 known_mean_score = known_compounds['Probability'].mean()
@@ -181,7 +181,7 @@ class SimpleModelComparison:
             decoy_compounds = df[df['Compound_ID'].str.contains('DECOY', case=False, na=False)]
             n_decoy = len(decoy_compounds)
             
-            print(f"🎯 DECOY Analysis:")
+            print(f" DECOY Analysis:")
             if n_decoy > 0:
                 decoy_active = decoy_compounds['Active'].sum() if 'Active' in decoy_compounds.columns else (decoy_compounds['Probability'] >= 0.5).sum()
                 decoy_active_pct = (decoy_active / n_decoy * 100)
@@ -195,7 +195,7 @@ class SimpleModelComparison:
                 print(f"   No DECOY compounds found")
             
             # Top hits analysis
-            print(f"🏆 Top 10 Hits:")
+            print(f" Top 10 Hits:")
             top_hits = df.nlargest(10, 'Probability')
             for j, (_, row) in enumerate(top_hits.iterrows(), 1):
                 compound = row['Compound_ID']
@@ -244,11 +244,11 @@ class SimpleModelComparison:
     
     def rank_models(self):
         """Rank models by quality metrics"""
-        print(f"\n🏆 MODEL QUALITY RANKING")
+        print(f"\n MODEL QUALITY RANKING")
         print("=" * 25)
         
         if self.comparison_summary is None:
-            print("❌ No analysis data available")
+            print(" No analysis data available")
             return None
         
         df = self.comparison_summary.copy()
@@ -332,13 +332,13 @@ class SimpleModelComparison:
         ranking_df = pd.DataFrame(quality_data)
         ranking_df = ranking_df.sort_values('Quality_Score', ascending=False)
         
-        print(f"\n📊 FINAL RANKINGS:")
+        print(f"\n FINAL RANKINGS:")
         print("=" * 50)
         
         for i, (_, row) in enumerate(ranking_df.iterrows(), 1):
             model_data = df[df['Model_ID'] == row['Model_ID']].iloc[0]
             
-            print(f"\n🥇 RANK {i}: {row['Model_ID']}")
+            print(f"\n RANK {i}: {row['Model_ID']}")
             print(f"   Cell Line: {row['Description']}")
             print(f"   Quality Score: {row['Quality_Score']:.1f}/100")
             print(f"   Hit Rate: {model_data['Active_Percentage']:.1f}% | Range: {model_data['Probability_Range']:.3f}")
@@ -349,11 +349,11 @@ class SimpleModelComparison:
     
     def find_consensus_hits(self):
         """Find compounds that multiple models agree on"""
-        print(f"\n🤝 CONSENSUS ANALYSIS")
+        print(f"\n CONSENSUS ANALYSIS")
         print("=" * 20)
         
         if len(self.results_data) < 2:
-            print("❌ Need at least 2 models for consensus")
+            print(" Need at least 2 models for consensus")
             return None
         
         # Find common compounds
@@ -365,10 +365,10 @@ class SimpleModelComparison:
             else:
                 common_compounds = common_compounds.intersection(compound_set)
         
-        print(f"📊 Common compounds across all models: {len(common_compounds):,}")
+        print(f" Common compounds across all models: {len(common_compounds):,}")
         
         if len(common_compounds) < 100:
-            print("❌ Too few common compounds for meaningful consensus")
+            print(" Too few common compounds for meaningful consensus")
             return None
         
         # Calculate consensus for each compound
@@ -407,13 +407,13 @@ class SimpleModelComparison:
         # Show consensus statistics
         high_consensus = consensus_df[consensus_df['Agreement_Rate'] >= 0.8]
         
-        print(f"\n📊 CONSENSUS STATISTICS:")
+        print(f"\n CONSENSUS STATISTICS:")
         print(f"   Total analyzed: {len(consensus_df):,} compounds")
         print(f"   High consensus (≥80%): {len(high_consensus):,} compounds")
         print(f"   Consensus active: {consensus_df['Consensus_Active'].sum():,} compounds")
         
         # Show top consensus hits
-        print(f"\n🎯 TOP 15 CONSENSUS HITS:")
+        print(f"\n TOP 15 CONSENSUS HITS:")
         top_consensus = consensus_df.head(15)
         
         for i, (_, row) in enumerate(top_consensus.iterrows(), 1):
@@ -431,7 +431,7 @@ class SimpleModelComparison:
             else:
                 comp_type = "OTHER"
             
-            status = "✅ CONSENSUS" if row['Consensus_Active'] else "❌ consensus"
+            status = " CONSENSUS" if row['Consensus_Active'] else "❌ consensus"
             
             print(f"  {i:2d}. [{comp_type}] {compound}")
             print(f"      Score: {mean_score:.3f} | Agreement: {agreement:.0%} ({models_active}/{total_models}) | {status}")
@@ -440,27 +440,27 @@ class SimpleModelComparison:
     
     def create_final_recommendation(self):
         """Generate final recommendation"""
-        print(f"\n🎯 FINAL RECOMMENDATION")
+        print(f"\n FINAL RECOMMENDATION")
         print("=" * 25)
         
         ranking = self.rank_models()
         if ranking is None or len(ranking) == 0:
-            print("❌ Cannot generate recommendation - no ranking data")
+            print(" Cannot generate recommendation - no ranking data")
             return
         
         best_model = ranking.iloc[0]
         best_data = self.comparison_summary[self.comparison_summary['Model_ID'] == best_model['Model_ID']].iloc[0]
         
-        print(f"🏆 RECOMMENDED MODEL: {best_model['Model_ID']}")
+        print(f" RECOMMENDED MODEL: {best_model['Model_ID']}")
         print(f"   Cell Line: {best_model['Description']}")
         print(f"   Quality Score: {best_model['Quality_Score']:.1f}/100")
         print(f"   File: {best_data['Filename']}")
         
-        print(f"\n📊 WHY THIS MODEL:")
+        print(f"\n WHY THIS MODEL:")
         for detail in best_model['Details']:
-            print(f"   ✅ {detail}")
+            print(f"    {detail}")
         
-        print(f"\n🎯 USAGE RECOMMENDATIONS:")
+        print(f"\n USAGE RECOMMENDATIONS:")
         if best_data['Active_Percentage'] < 5:
             print("   • Use 95th percentile as threshold for hit selection")
         elif best_data['Active_Percentage'] < 10:
@@ -494,7 +494,7 @@ def main():
     # Load all results
     results = comparator.find_and_load_results()
     if not results:
-        print("❌ No results files could be loaded!")
+        print(" No results files could be loaded!")
         return
     
     # Analyze all models
@@ -513,7 +513,7 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     summary_file = f'Model_Comparison_Summary_{timestamp}.xlsx'
     
-    print(f"\n💾 SAVING SUMMARY")
+    print(f"\n SAVING SUMMARY")
     print("=" * 15)
     
     with pd.ExcelWriter(summary_file, engine='openpyxl') as writer:
@@ -524,13 +524,13 @@ def main():
         if consensus is not None:
             consensus.head(500).to_excel(writer, sheet_name='Consensus_Hits', index=False)
     
-    print(f"✅ Summary saved: {summary_file}")
+    print(f" Summary saved: {summary_file}")
     
-    print(f"\n🎉 COMPARISON COMPLETE!")
+    print(f"\n COMPARISON COMPLETE")
     print("=" * 25)
-    print(f"✅ Analyzed {len(results)} models")
-    print(f"✅ Generated quality rankings")
-    print(f"✅ Identified best model for your research")
+    print(f" Analyzed {len(results)} models")
+    print(f" Generated quality rankings")
+    print(f" Identified best model for your research")
 
 if __name__ == "__main__":
     main()
