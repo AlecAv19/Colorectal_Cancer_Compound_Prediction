@@ -39,16 +39,16 @@ class Top50ToxicityScreening:
                        glob.glob("Top50_Results*.xlsx"))
             if vs_files:
                 results_file = max(vs_files, key=os.path.getmtime)
-                print(f"✅ Found recent results: {results_file}")
+                print(f" Found recent results: {results_file}")
             else:
-                print("❌ No VS results found! Please specify file.")
+                print(" No VS results found! Please specify file.")
                 return None
         
         try:
             # Load all sheets first to see what's available
             excel_file = pd.ExcelFile(results_file)
             sheets = excel_file.sheet_names
-            print(f"📋 Available sheets ({len(sheets)} total):")
+            print(f" Available sheets ({len(sheets)} total):")
             for i, sheet in enumerate(sheets, 1):
                 print(f"   {i:2d}. {sheet}")
             
@@ -64,7 +64,7 @@ class Top50ToxicityScreening:
                     if target.lower() == sheet.lower():
                         available_top50_sheets.append(sheet)
                         found = True
-                        print(f"✅ Exact match found: {sheet}")
+                        print(f" Exact match found: {sheet}")
                         break
                 
                 if not found:
@@ -73,75 +73,75 @@ class Top50ToxicityScreening:
                         if 'top50' in sheet.lower() and any(db.lower() in sheet.lower() for db in ['coconut', 'foodb', 'lotus']):
                             available_top50_sheets.append(sheet)
                             found = True
-                            print(f"✅ Partial match found: {sheet}")
+                            print(f" Partial match found: {sheet}")
                             break
                 
                 if not found:
-                    print(f"❌ No match found for {target}")
+                    print(f" No match found for {target}")
             
             if not available_top50_sheets:
-                print("\n❌ No Top50 sheets found!")
-                print("📋 Available sheets containing 'top' (case-insensitive):")
+                print("\n No Top50 sheets found!")
+                print(" Available sheets containing 'top' (case-insensitive):")
                 top_sheets = [s for s in sheets if 'top' in s.lower()]
                 if top_sheets:
                     for sheet in top_sheets:
-                        print(f"   📄 {sheet}")
+                        print(f"    {sheet}")
                 else:
                     print("   None found")
-                print("\n💡 Please check your sheet names. Expected: COCONUT_Top50, FOODB_Top50, LOTUS_Top50")
+                print("\n Please check your sheet names. Expected: COCONUT_Top50, FOODB_Top50, LOTUS_Top50")
                 return None
             
-            print(f"\n🎯 Found {len(available_top50_sheets)} Top50 sheets:")
+            print(f"\n Found {len(available_top50_sheets)} Top50 sheets:")
             for sheet in available_top50_sheets:
-                print(f"   📄 {sheet}")
+                print(f"    {sheet}")
             
             # Load and inspect the Top50 sheets
             loaded_sheets = {}
             total_compounds = 0
             
-            print(f"\n🔬 Loading and inspecting Top50 results...")
+            print(f"\n Loading and inspecting Top50 results...")
             for sheet_name in available_top50_sheets:
                 try:
-                    print(f"\n📊 Loading sheet: {sheet_name}")
+                    print(f"\n Loading sheet: {sheet_name}")
                     df = pd.read_excel(results_file, sheet_name=sheet_name)
                     
-                    print(f"   📏 Initial size: {len(df):,} rows × {len(df.columns):,} columns")
+                    print(f"    Initial size: {len(df):,} rows × {len(df.columns):,} columns")
                     
                     # Show first few column names to understand the data
-                    print(f"   📋 Column names (first 10): {list(df.columns[:10])}")
+                    print(f"    Column names (first 10): {list(df.columns[:10])}")
                     
                     # Check if this looks like actual compound data
                     if len(df) > 1000:
-                        print(f"   ⚠️  WARNING: This sheet has {len(df):,} rows - this doesn't look like a Top50 sheet!")
-                        print(f"   🔍 First few rows of data:")
+                        print(f"    WARNING: This sheet has {len(df):,} rows - this doesn't look like a Top50 sheet!")
+                        print(f"    First few rows of data:")
                         print(df.head(3))
                         
                         # Ask user if they want to proceed with this sheet
-                        proceed = input(f"   ❓ This sheet seems too large for Top50. Continue anyway? (y/n): ").strip().lower()
+                        proceed = input(f"    This sheet seems too large for Top50. Continue anyway? (y/n): ").strip().lower()
                         if proceed != 'y':
-                            print(f"   ⏭️  Skipping {sheet_name}")
+                            print(f"     Skipping {sheet_name}")
                             continue
                         else:
                             # Limit to actual top 50 if user proceeds
                             activity_cols = [col for col in df.columns if any(x in col.lower() for x in ['score', 'probability', 'affinity', 'activity'])]
                             if activity_cols:
-                                print(f"   ✂️  Limiting to top 50 by {activity_cols[0]}")
+                                print(f"     Limiting to top 50 by {activity_cols[0]}")
                                 df = df.nlargest(50, activity_cols[0])
                             else:
-                                print(f"   ✂️  No activity column found, taking first 50 rows")
+                                print(f"     No activity column found, taking first 50 rows")
                                 df = df.head(50)
-                            print(f"   ✅ Reduced to {len(df):,} rows")
+                            print(f"    Reduced to {len(df):,} rows")
                     
                     # Check for SMILES
                     smiles_cols = [col for col in df.columns if 'smiles' in col.lower()]
-                    print(f"   🧪 SMILES columns found: {smiles_cols}")
+                    print(f"    SMILES columns found: {smiles_cols}")
                     
                     if not smiles_cols:
                         print(f"   🔍 No SMILES found, attempting to add from original database...")
                         df = self.add_smiles_to_sheet(df, sheet_name)
                         if df is not None:
                             smiles_cols = [col for col in df.columns if 'smiles' in col.lower()]
-                            print(f"   ✅ SMILES columns after merge: {smiles_cols}")
+                            print(f"    SMILES columns after merge: {smiles_cols}")
                     
                     if df is not None and len(df) > 0:
                         # Add sheet metadata
@@ -164,11 +164,11 @@ class Top50ToxicityScreening:
                         
                         # Show detailed info
                         db_name = df['Database'].iloc[0] if 'Database' in df.columns else 'Unknown'
-                        print(f"   ✅ Successfully loaded: {len(df):,} compounds from {db_name}")
+                        print(f"    Successfully loaded: {len(df):,} compounds from {db_name}")
                         
                         # Check if SMILES are available
                         smiles_available = df['SMILES'].notna().sum() if 'SMILES' in df.columns else 0
-                        print(f"   🧪 SMILES available: {smiles_available:,}/{len(df):,} ({smiles_available/len(df)*100:.1f}%)")
+                        print(f"    SMILES available: {smiles_available:,}/{len(df):,} ({smiles_available/len(df)*100:.1f}%)")
                         
                         # Show activity score info
                         activity_cols = [col for col in df.columns if any(x in col.lower() for x in ['score', 'probability', 'affinity', 'activity'])]
@@ -177,31 +177,31 @@ class Top50ToxicityScreening:
                             avg_activity = df[activity_col].mean()
                             max_activity = df[activity_col].max()
                             min_activity = df[activity_col].min()
-                            print(f"   📊 Activity ({activity_col}): avg={avg_activity:.3f}, max={max_activity:.3f}, min={min_activity:.3f}")
+                            print(f"    Activity ({activity_col}): avg={avg_activity:.3f}, max={max_activity:.3f}, min={min_activity:.3f}")
                         else:
-                            print(f"   ❌ No activity columns found")
+                            print(f"    No activity columns found")
                     
                 except Exception as e:
-                    print(f"   ❌ Error loading {sheet_name}: {e}")
+                    print(f"    Error loading {sheet_name}: {e}")
             
             if not loaded_sheets:
-                print("❌ No Top50 sheets could be loaded successfully!")
+                print(" No Top50 sheets could be loaded successfully!")
                 return None
             
             self.top50_sheets_data = loaded_sheets
-            print(f"\n✅ LOADING COMPLETE")
-            print(f"   📊 Successfully loaded {len(loaded_sheets)} sheets")
-            print(f"   🧪 Total compounds: {total_compounds:,}")
-            print(f"   📏 Expected for true Top50: ~150 compounds (50 × 3 databases)")
+            print(f"\n LOADING COMPLETE")
+            print(f"    Successfully loaded {len(loaded_sheets)} sheets")
+            print(f"    Total compounds: {total_compounds:,}")
+            print(f"    Expected for true Top50: ~150 compounds (50 × 3 databases)")
             
             if total_compounds > 200:
-                print(f"   ⚠️  WARNING: Total compounds ({total_compounds:,}) is much higher than expected!")
-                print(f"   💡 This suggests the sheets may not be true 'Top50' sheets")
+                print(f"    WARNING: Total compounds ({total_compounds:,}) is much higher than expected!")
+                print(f"    This suggests the sheets may not be true 'Top50' sheets")
             
             return loaded_sheets
             
         except Exception as e:
-            print(f"❌ Error loading results: {e}")
+            print(f" Error loading results: {e}")
             return None
     
     def add_smiles_to_sheet(self, df, sheet_name):
@@ -216,7 +216,7 @@ class Top50ToxicityScreening:
                 break
         
         if database is None:
-            print(f"   ❌ Cannot determine database for {sheet_name}")
+            print(f"    Cannot determine database for {sheet_name}")
             return df
         
         # Load original database
@@ -236,7 +236,7 @@ class Top50ToxicityScreening:
                 
                 if smiles_added > 0:
                     merged_df = test_merge
-                    print(f"   ✅ Added SMILES for {smiles_added:,} compounds via {id_col}")
+                    print(f"    Added SMILES for {smiles_added:,} compounds via {id_col}")
                     break
                     
             except Exception as e:
@@ -321,7 +321,7 @@ class Top50ToxicityScreening:
                     activity_cols.append(col)
         
         if not activity_cols:
-            print("   ❌ No activity score columns found!")
+            print("    No activity score columns found")
             return combined_df
         
         primary_activity_col = activity_cols[0]
@@ -338,10 +338,10 @@ class Top50ToxicityScreening:
                 # Sort by activity score and keep the best for each compound
                 combined_df = combined_df.sort_values(primary_activity_col, ascending=False)
                 result_df = combined_df.drop_duplicates(subset=[id_col], keep='first')
-                print(f"   ✅ Best per compound: {len(result_df):,} unique compounds")
+                print(f"    Best per compound: {len(result_df):,} unique compounds")
             else:
                 result_df = combined_df
-                print(f"   ⚠️ No compound ID column found, keeping all records")
+                print(f"    No compound ID column found, keeping all records")
                 
         elif strategy == 'database_comparison':
             # Keep the best compound from each database for comparison
@@ -363,14 +363,14 @@ class Top50ToxicityScreening:
                     result_df = result_df.sort_values(primary_activity_col, ascending=False)
                     result_df = result_df.drop_duplicates(subset=[id_col], keep='first')
                 
-                print(f"   ✅ Database comparison: {len(result_df):,} compounds")
+                print(f"    Database comparison: {len(result_df):,} compounds")
             else:
                 result_df = combined_df
-                print(f"   ⚠️ No database column found, using all data")
+                print(f"    No database column found, using all data")
                 
         else:  # 'all_top50'
             result_df = combined_df
-            print(f"   ✅ Keeping all Top50 predictions: {len(result_df):,} records")
+            print(f"    Keeping all Top50 predictions: {len(result_df):,} records")
         
         # Add combination metadata
         result_df['Total_Sheets_Processed'] = len(sheets_data)
@@ -397,7 +397,7 @@ class Top50ToxicityScreening:
     
     def calculate_simple_toxicity_features(self, smiles_list):
         """Calculate simple molecular features associated with toxicity"""
-        print(f"\n🧪 CALCULATING MOLECULAR TOXICITY FEATURES")
+        print(f"\n CALCULATING MOLECULAR TOXICITY FEATURES")
         print("=" * 45)
         
         toxicity_features = []
@@ -554,7 +554,7 @@ class Top50ToxicityScreening:
         print(f"   After toxicity merge: {after_tox_merge:,} rows (was {initial_size:,})")
         
         if after_tox_merge > initial_size * 2:
-            print(f"   ⚠️ WARNING: Toxicity merge created duplicates! Removing...")
+            print(f"    WARNING: Toxicity merge created duplicates! Removing...")
             safety_results = safety_results.drop_duplicates()
             print(f"   After deduplication: {len(safety_results):,} rows")
         
@@ -566,13 +566,13 @@ class Top50ToxicityScreening:
         print(f"   After ProTox merge: {after_protox_merge:,} rows (was {before_protox:,})")
         
         if after_protox_merge > before_protox * 2:
-            print(f"   ⚠️ WARNING: ProTox merge created duplicates! Removing...")
+            print(f"    WARNING: ProTox merge created duplicates! Removing...")
             safety_results = safety_results.drop_duplicates()
             print(f"   After deduplication: {len(safety_results):,} rows")
         
         # Final safety check - ensure we don't have millions of rows
         if len(safety_results) > 10000:
-            print(f"   🚨 CRITICAL: {len(safety_results):,} rows is too many! Something went wrong.")
+            print(f"    CRITICAL: {len(safety_results):,} rows is too many! Something went wrong.")
             print(f"   Limiting to original dataset size to prevent system issues...")
             safety_results = safety_results.head(len(vs_df))
             print(f"   Limited to: {len(safety_results):,} rows")
@@ -646,13 +646,13 @@ class Top50ToxicityScreening:
         # Sort by safety index (safest first)
         safety_results = safety_results.sort_values('Safety_Index', ascending=False)
         
-        print(f"✅ Safety assessment complete for {len(safety_results):,} compounds")
+        print(f" Safety assessment complete for {len(safety_results):,} compounds")
         
         return safety_results
     
     def create_safety_prioritized_hits(self, safety_results):
         """Create safety-prioritized hit list"""
-        print(f"\n🎯 CREATING SAFETY-PRIORITIZED HIT LIST")
+        print(f"\n CREATING SAFETY-PRIORITIZED HIT LIST")
         print("=" * 40)
         
         # Find activity column
@@ -660,11 +660,11 @@ class Top50ToxicityScreening:
         activity_cols = [col for col in activity_cols if col not in ['Safety_Score']]
         
         if not activity_cols:
-            print("❌ No activity score column found")
+            print(" No activity score column found")
             return safety_results
         
         activity_col = activity_cols[0]
-        print(f"✅ Using activity column: {activity_col}")
+        print(f" Using activity column: {activity_col}")
         
         # Create balanced score (activity + safety)
         activity_scores = safety_results[activity_col].fillna(0)
@@ -684,7 +684,7 @@ class Top50ToxicityScreening:
         high_activity_safe = ((prioritized_hits[activity_col] >= 0.6) & 
                              (prioritized_hits['Safety_Index'] >= 0.6)).sum()
         
-        print(f"📊 SAFETY ANALYSIS RESULTS:")
+        print(f" SAFETY ANALYSIS RESULTS:")
         print(f"   Total compounds: {total_compounds:,}")
         print(f"   Very safe compounds: {very_safe:,} ({very_safe/total_compounds*100:.1f}%)")
         print(f"   Safe compounds: {safe:,} ({safe/total_compounds*100:.1f}%)")
@@ -698,7 +698,7 @@ class Top50ToxicityScreening:
                 print(f"   {db}: {count:,} compounds")
         
         # Show top safety-prioritized hits
-        print(f"\n🏆 TOP 15 SAFETY-PRIORITIZED HITS:")
+        print(f"\n TOP 15 SAFETY-PRIORITIZED HITS:")
         top_hits = prioritized_hits.head(15)
         
         for i, (_, row) in enumerate(top_hits.iterrows(), 1):
@@ -720,7 +720,7 @@ class Top50ToxicityScreening:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file = f'Top50_Focused_Toxicity_Results_{timestamp}.xlsx'
         
-        print(f"\n💾 SAVING TOP50 FOCUSED TOXICITY RESULTS")
+        print(f"\n SAVING TOP50 FOCUSED TOXICITY RESULTS")
         print("=" * 45)
         
         # Validate data size before saving
@@ -728,7 +728,7 @@ class Top50ToxicityScreening:
         max_cols = 100      # Reasonable column limit
         
         if len(safety_results) > max_rows:
-            print(f"⚠️ Data too large for Excel ({len(safety_results):,} rows), limiting to {max_rows:,}")
+            print(f" Data too large for Excel ({len(safety_results):,} rows), limiting to {max_rows:,}")
             # Find activity column to sort by
             activity_cols = [col for col in safety_results.columns if any(x in col.lower() for x in ['score', 'probability', 'affinity', 'activity'])]
             activity_cols = [col for col in activity_cols if col not in ['Safety_Score']]
@@ -737,10 +737,10 @@ class Top50ToxicityScreening:
                 safety_results = safety_results.nlargest(max_rows, activity_cols[0])
             else:
                 safety_results = safety_results.head(max_rows)
-            print(f"✅ Data limited to {len(safety_results):,} rows")
+            print(f" Data limited to {len(safety_results):,} rows")
         
         if len(safety_results.columns) > max_cols:
-            print(f"⚠️ Too many columns ({len(safety_results.columns)}), selecting key columns only")
+            print(f" Too many columns ({len(safety_results.columns)}), selecting key columns only")
             # Keep essential columns
             essential_cols = []
             for col in safety_results.columns:
@@ -758,7 +758,7 @@ class Top50ToxicityScreening:
                 essential_cols = essential_cols[:max_cols]
             
             safety_results = safety_results[essential_cols]
-            print(f"✅ Reduced to {len(safety_results.columns)} essential columns")
+            print(f" Reduced to {len(safety_results.columns)} essential columns")
         
         # Find activity column
         activity_cols = [col for col in safety_results.columns if any(x in col.lower() for x in ['score', 'probability', 'affinity', 'activity'])]
@@ -806,25 +806,25 @@ class Top50ToxicityScreening:
                 print(f"   Writing recommendations sheet...")
                 rec_df.to_excel(writer, sheet_name='Top50_Recommendations', index=False)
             
-            print(f"✅ Top50 focused toxicity results saved: {output_file}")
+            print(f" Top50 focused toxicity results saved: {output_file}")
             
         except Exception as e:
-            print(f"❌ Error saving Excel file: {e}")
+            print(f" Error saving Excel file: {e}")
             # Try saving as CSV as fallback
             csv_file = output_file.replace('.xlsx', '.csv')
             print(f"   Attempting to save as CSV: {csv_file}")
             try:
                 safety_results.to_csv(csv_file, index=False)
-                print(f"✅ Saved as CSV: {csv_file}")
+                print(f" Saved as CSV: {csv_file}")
                 return csv_file
             except Exception as csv_error:
-                print(f"❌ CSV save also failed: {csv_error}")
+                print(f" CSV save also failed: {csv_error}")
                 return None
         
         # Print focused summary
         total_compounds = len(safety_results)
         
-        print(f"\n📊 TOP50 FOCUSED SUMMARY:")
+        print(f"\n TOP50 FOCUSED SUMMARY:")
         print(f"   Total Top50 records processed: {total_compounds:,}")
         
         if 'Database' in safety_results.columns:
@@ -852,7 +852,7 @@ class Top50ToxicityScreening:
                 (safety_results['Safety_Index'] >= 0.6)
             ]
             
-            print(f"\n🎯 TOP50 KEY FINDINGS:")
+            print(f"\n TOP50 KEY FINDINGS:")
             print(f"   High activity + safe compounds: {len(high_activity_safe):,}")
             
             # FOODB advantage
@@ -862,7 +862,7 @@ class Top50ToxicityScreening:
                 foodb_safe_rate = len(foodb_safe) / len(foodb_compounds) * 100
                 print(f"   FOODB safety advantage: {len(foodb_safe):,}/{len(foodb_compounds):,} compounds safe ({foodb_safe_rate:.1f}%)")
         
-        print(f"\n🚀 EXPERIMENTAL RECOMMENDATIONS:")
+        print(f"\n EXPERIMENTAL RECOMMENDATIONS:")
         print(f"   Phase 1 (Immediate): FOODB safe compounds")
         print(f"   Phase 2 (Secondary): Database-specific top performers")  
         print(f"   Phase 3 (Comprehensive): Remaining Top50 safe compounds")
@@ -872,13 +872,13 @@ class Top50ToxicityScreening:
 
 def main():
     """Top50 focused toxicity screening pipeline"""
-    print("🧪 FOCUSED TOP50 TOXICITY SCREENING")
+    print(" FOCUSED TOP50 TOXICITY SCREENING")
     print("=" * 45)
     print("Safety assessment of the best compounds from COCONUT, FOODB, and LOTUS Top50 sheets")
     print()
     
     # Get user preference for combination strategy
-    print("📋 COMBINATION STRATEGY OPTIONS:")
+    print(" COMBINATION STRATEGY OPTIONS:")
     print("1. best_per_compound - Keep highest scoring prediction per compound (Recommended)")
     print("2. database_comparison - Keep best from each database for comparison")
     print("3. all_top50 - Keep all Top50 predictions (may have duplicates)")
@@ -891,7 +891,7 @@ def main():
         '3': 'all_top50'
     }
     strategy = strategy_map.get(strategy_choice, 'best_per_compound')
-    print(f"✅ Using strategy: {strategy}")
+    print(f" Using strategy: {strategy}")
     print()
     
     tox_screener = Top50ToxicityScreening()
@@ -909,18 +909,18 @@ def main():
     # Check for SMILES column
     smiles_cols = [col for col in combined_results.columns if 'smiles' in col.lower()]
     if not smiles_cols:
-        print("❌ No SMILES column found in combined results!")
+        print(" No SMILES column found in combined results!")
         print("Available columns:", list(combined_results.columns))
         return
     
     smiles_col = smiles_cols[0]
-    print(f"✅ Using SMILES column: {smiles_col}")
+    print(f" Using SMILES column: {smiles_col}")
     
     # For Top50 sheets, we can process all compounds (they're already pre-filtered)
     compounds_to_process = combined_results
     smiles_list = compounds_to_process[smiles_col].tolist()
     
-    print(f"\n🧪 PROCESSING {len(compounds_to_process):,} TOP50 COMPOUNDS FOR TOXICITY ASSESSMENT")
+    print(f"\n PROCESSING {len(compounds_to_process):,} TOP50 COMPOUNDS FOR TOXICITY ASSESSMENT")
     
     # Calculate simple toxicity features
     toxicity_features = tox_screener.calculate_simple_toxicity_features(smiles_list)
@@ -937,16 +937,16 @@ def main():
     # Save enhanced results
     output_file = tox_screener.save_top50_toxicity_results(prioritized_hits)
     
-    print(f"\n🎉 TOP50 FOCUSED TOXICITY SCREENING COMPLETE!")
+    print(f"\n TOP50 FOCUSED TOXICITY SCREENING COMPLETE")
     print("=" * 50)
-    print("✅ Top50 sheets from COCONUT, FOODB, and LOTUS processed")
-    print("✅ Best compounds from each database analyzed")
-    print("✅ Cross-database safety comparison completed")
-    print("✅ Focused toxicity predictions generated")
-    print("✅ Top50 safety-prioritized hit list created")
-    print(f"✅ Results saved: {output_file}")
+    print(" Top50 sheets from COCONUT, FOODB, and LOTUS processed")
+    print(" Best compounds from each database analyzed")
+    print(" Cross-database safety comparison completed")
+    print(" Focused toxicity predictions generated")
+    print(" Top50 safety-prioritized hit list created")
+    print(f" Results saved: {output_file}")
     
-    print(f"\n🎯 FOCUSED NEXT STEPS:")
+    print(f"\n FOCUSED NEXT STEPS:")
     print("1. Review the top-scoring safe compounds first")
     print("2. Compare safety profiles across databases")
     print("3. Prioritize FOODB compounds for inherent food safety")
