@@ -1,0 +1,18 @@
+##########################
+# Step 2. Parameter file
+##########################
+
+##########################
+# This code use the XXX_Balanced_Training.txt file created in Step 1.
+##########################
+
+##########################
+# Data Normalization/Variable Reduction
+#     Data_Normalization: If True, data is normalized and the scaler is saved
+#     Simple_Variable_Reduction: If True, variables with a variance lower than Var_Curoff is removed
+#     Var_Curoff: Variance cutoff to remove variables
+##########################
+Data_Normalization = True
+Simple_Variable_Reduction = True
+Var_Curoff = 0.05
+
