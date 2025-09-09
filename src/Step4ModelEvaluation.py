@@ -143,13 +143,13 @@ def evaluate_all_models():
     
     # Deployment recommendation
     if bcr >= 0.7 and gen_gap <= 0.15:
-        print("✅ RECOMMENDED FOR DEPLOYMENT")
+        print("RECOMMENDED FOR DEPLOYMENT")
         print("This model is suitable for virtual screening.")
     elif bcr >= 0.6:
-        print("⚠️  CONDITIONAL DEPLOYMENT")
+        print("CONDITIONAL DEPLOYMENT")
         print("Model may be useful but consider additional validation.")
     else:
-        print("❌ NOT RECOMMENDED FOR DEPLOYMENT")
+        print("NOT RECOMMENDED FOR DEPLOYMENT")
         print("Model performance is too low for reliable virtual screening.")
     
     return summary_df, best_model, best_row
