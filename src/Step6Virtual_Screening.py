@@ -52,11 +52,11 @@ class QuickVirtualScreening:
             found_models.extend(glob.glob(pattern))
         
         if found_models:
-            print("✅ Found model files:")
+            print(" Found model files:")
             for model in found_models:
                 print(f"   - {model}")
         else:
-            print("❌ No model files found!")
+            print(" No model files found!")
             print("Available .pkl files:")
             for file in glob.glob('*.pkl'):
                 print(f"   - {file}")
@@ -86,13 +86,13 @@ class QuickVirtualScreening:
         if found_data:
             # Use most recent file
             latest_data = max(found_data, key=os.path.getctime)
-            print(f"✅ Using latest data file: {latest_data}")
+            print(f" Using latest data file: {latest_data}")
             
             print("Available data files:")
             for data in found_data:
                 print(f"   - {data}")
         else:
-            print("❌ No descriptor data files found!")
+            print(" No descriptor data files found!")
             print("Available Excel files:")
             for file in glob.glob('*.xlsx'):
                 print(f"   - {file}")
@@ -108,7 +108,7 @@ class QuickVirtualScreening:
             with open(model_file, 'rb') as f:
                 model_data = pickle.load(f)
             
-            print(f"✅ Model loaded successfully")
+            print(f" Model loaded successfully")
             
             # Try to extract model components (adapt based on your model structure)
             if 'ensemble' in model_file.lower():
@@ -155,12 +155,12 @@ class QuickVirtualScreening:
             return True
             
         except Exception as e:
-            print(f"❌ Error loading model: {e}")
+            print(f" Error loading model: {e}")
             return False
     
     def load_screening_data(self, data_file):
         """Load data for screening"""
-        print(f"\n📊 LOADING SCREENING DATA: {data_file}")
+        print(f"\n LOADING SCREENING DATA: {data_file}")
         print("=" * 40)
         
         try:
@@ -178,16 +178,16 @@ class QuickVirtualScreening:
                         df = pd.read_excel(data_file, sheet_name=sheet)
                     else:
                         df = pd.read_excel(data_file)
-                    print(f"✅ Loaded from sheet: {sheet or 'first sheet'}")
+                    print(f" Loaded from sheet: {sheet or 'first sheet'}")
                     break
                 except:
                     continue
             
             if df is None:
-                print("❌ Could not load data")
+                print(" Could not load data")
                 return None, None, None
             
-            print(f"📊 Data shape: {df.shape}")
+            print(f" Data shape: {df.shape}")
             
             # Identify columns
             metadata_patterns = [
@@ -202,11 +202,11 @@ class QuickVirtualScreening:
             
             descriptor_cols = [col for col in df.columns if col not in metadata_cols]
             
-            print(f"📋 Metadata columns: {len(metadata_cols)}")
-            print(f"🧪 Descriptor columns: {len(descriptor_cols)}")
+            print(f" Metadata columns: {len(metadata_cols)}")
+            print(f" Descriptor columns: {len(descriptor_cols)}")
             
             if len(descriptor_cols) == 0:
-                print("❌ No descriptor columns found!")
+                print(" No descriptor columns found")
                 return None, None, None
             
             # Extract data
@@ -222,7 +222,7 @@ class QuickVirtualScreening:
                 compound_ids = [f"Compound_{i+1}" for i in range(len(df))]
             
             # Clean descriptor data
-            print("🧹 Cleaning descriptor data...")
+            print(" Cleaning descriptor data...")
             
             # Handle missing values
             missing_before = descriptor_data.isnull().sum().sum()
@@ -236,12 +236,12 @@ class QuickVirtualScreening:
             print(f"   Fixed {missing_before} missing values")
             print(f"   Fixed {inf_before} infinite values")
             
-            print(f"✅ Ready to screen {len(compound_ids)} compounds")
+            print(f" Ready to screen {len(compound_ids)} compounds")
             
             return descriptor_data, compound_ids, compound_metadata
             
         except Exception as e:
-            print(f"❌ Error loading data: {e}")
+            print(f" Error loading data: {e}")
             return None, None, None
     
     def preprocess_data(self, X):
@@ -270,7 +270,7 @@ class QuickVirtualScreening:
             return X_processed
             
         except Exception as e:
-            print(f"   ⚠ Preprocessing error: {e}")
+            print(f"    Preprocessing error: {e}")
             return X
     
     def make_predictions(self, X_processed):
@@ -299,11 +299,11 @@ class QuickVirtualScreening:
                 if all_probs:
                     mean_probs = np.mean(all_probs, axis=0)
                     predictions = (mean_probs > 0.5).astype(int)
-                    print(f"   ✅ Ensemble prediction complete ({len(all_probs)} models)")
+                    print(f"    Ensemble prediction complete ({len(all_probs)} models)")
                 else:
                     mean_probs = np.full(len(X_processed), 0.5)
                     predictions = np.zeros(len(X_processed))
-                    print(f"   ⚠ No models succeeded, using default")
+                    print(f"    No models succeeded, using default")
                     
             else:
                 print("   Making single model prediction...")
@@ -319,28 +319,28 @@ class QuickVirtualScreening:
                     X_model = X_processed[:, valid_features]
                     mean_probs = model.predict_proba(X_model)[:, 1]
                     predictions = model.predict(X_model)
-                    print(f"   ✅ Single model prediction complete ({len(valid_features)} features)")
+                    print(f"    Single model prediction complete ({len(valid_features)} features)")
                 else:
                     mean_probs = np.full(len(X_processed), 0.5)
                     predictions = np.zeros(len(X_processed))
-                    print(f"   ⚠ No valid features, using default")
+                    print(f"    No valid features, using default")
             
             return predictions, mean_probs
             
         except Exception as e:
-            print(f"   ❌ Prediction error: {e}")
+            print(f"    Prediction error: {e}")
             n_compounds = len(X_processed)
             return np.zeros(n_compounds), np.full(n_compounds, 0.5)
     
     def run_virtual_screening(self):
         """Run complete virtual screening pipeline"""
-        print("🚀 QUICK VIRTUAL SCREENING PIPELINE")
+        print(" QUICK VIRTUAL SCREENING PIPELINE")
         print("=" * 40)
         
         # Find model files
         model_files = self.find_model_files()
         if not model_files:
-            print("❌ No model files found! Cannot proceed.")
+            print(" No model files found! Cannot proceed.")
             return None
         
         # Use first available model
@@ -348,37 +348,37 @@ class QuickVirtualScreening:
         
         # Load model
         if not self.load_model(model_file):
-            print("❌ Failed to load model! Cannot proceed.")
+            print(" Failed to load model! Cannot proceed.")
             return None
         
         # Find data files
         data_file = self.find_data_files()
         if not data_file:
-            print("❌ No descriptor data found! Cannot proceed.")
+            print(" No descriptor data found! Cannot proceed.")
             return None
         
         # Load screening data
         descriptor_data, compound_ids, metadata = self.load_screening_data(data_file)
         if descriptor_data is None:
-            print("❌ Failed to load screening data! Cannot proceed.")
+            print(" Failed to load screening data! Cannot proceed.")
             return None
         
         # Run screening
-        print(f"\n🎯 RUNNING VIRTUAL SCREENING")
+        print(f"\n RUNNING VIRTUAL SCREENING")
         print("=" * 30)
         print(f"Compounds to screen: {len(compound_ids)}")
         print(f"Descriptors per compound: {descriptor_data.shape[1]}")
         
         # Preprocess data
-        print("🔧 Preprocessing data...")
+        print(" Preprocessing data...")
         X_processed = self.preprocess_data(descriptor_data.values)
         
         # Make predictions
-        print("🤖 Making predictions...")
+        print(" Making predictions...")
         predictions, probabilities = self.make_predictions(X_processed)
         
         # Create results
-        print("📊 Compiling results...")
+        print(" Compiling results...")
         results = pd.DataFrame({
             'Compound_ID': compound_ids,
             'Prediction': predictions,
@@ -409,9 +409,9 @@ class QuickVirtualScreening:
         mean_prob = results['Probability'].mean()
         top_1_percent = results['Probability'].quantile(0.99)
         
-        print(f"\n🎉 VIRTUAL SCREENING COMPLETE!")
+        print(f"\n VIRTUAL SCREENING COMPLETE!")
         print("=" * 35)
-        print(f"📊 Results Summary:")
+        print(f" Results Summary:")
         print(f"   Total compounds screened: {n_total:,}")
         print(f"   Predicted active (≥0.5): {n_active:,} ({n_active/n_total*100:.1f}%)")
         print(f"   Mean probability: {mean_prob:.3f}")
@@ -463,12 +463,12 @@ class QuickVirtualScreening:
             ], columns=['Metric', 'Value'])
             summary_stats.to_excel(writer, sheet_name='Summary', index=False)
         
-        print(f"✅ Results saved to: {output_file}")
+        print(f" Results saved to: {output_file}")
         return output_file
     
     def show_top_hits(self, results):
         """Show top screening hits"""
-        print(f"\n🏆 TOP 20 SCREENING HITS")
+        print(f"\n TOP 20 SCREENING HITS")
         print("=" * 30)
         
         top_20 = results.head(20)
@@ -496,7 +496,7 @@ class QuickVirtualScreening:
 
 def main():
     """Run quick virtual screening"""
-    print("🚀 QUICK VIRTUAL SCREENING")
+    print(" QUICK VIRTUAL SCREENING")
     print("=" * 30)
     print("Automatic model and data detection")
     print()
@@ -505,19 +505,19 @@ def main():
     results = vs.run_virtual_screening()
     
     if results is not None:
-        print(f"\n🎉 VIRTUAL SCREENING SUCCESS!")
-        print("✅ All compounds screened")
-        print("✅ Results saved to Excel")
-        print("✅ Top hits identified")
+        print(f"\n VIRTUAL SCREENING SUCCESS!")
+        print(" All compounds screened")
+        print(" Results saved to Excel")
+        print(" Top hits identified")
         
-        print(f"\n🎯 NEXT STEPS:")
+        print(f"\n NEXT STEPS:")
         print("1. Review top hits in Excel file")
         print("2. Validate high-probability compounds")
         print("3. Plan experimental testing")
         
         return True
     else:
-        print("❌ Virtual screening failed")
+        print(" Virtual screening failed")
         return False
 
 if __name__ == "__main__":
