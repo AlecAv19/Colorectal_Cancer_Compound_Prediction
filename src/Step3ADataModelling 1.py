@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jul 11 07:41:08 2025
-
-@author: edu
-
 This code is part of the Pipeline-Codes
 Part 3A. Data Modelling using the Split of three Files, Training, Test and External
 
