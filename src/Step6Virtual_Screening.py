@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 19 23:54:05 2025
 
-@author: ASUS TUF F15
-"""
 """
 Enhanced Production Virtual Screening Pipeline
 Improved error handling, flexible data loading, and comprehensive analysis
