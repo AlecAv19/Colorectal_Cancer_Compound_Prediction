@@ -40,14 +40,14 @@ class FinalDatabaseScreening:
         coconut_files = glob.glob("*COCONUT*.csv")
         if coconut_files:
             coconut_file = max(coconut_files, key=os.path.getsize)
-            print(f"🥥 Loading COCONUT: {coconut_file}")
+            print(f" Loading COCONUT: {coconut_file}")
             
             try:
                 # Try different encodings
                 for encoding in ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1']:
                     try:
                         coconut_df = pd.read_csv(coconut_file, encoding=encoding, nrows=2000)
-                        print(f"   ✅ Loaded with {encoding} encoding: {len(coconut_df):,} compounds")
+                        print(f"    Loaded with {encoding} encoding: {len(coconut_df):,} compounds")
                         databases['COCONUT'] = {
                             'data': coconut_df,
                             'compounds': len(coconut_df),
@@ -57,27 +57,27 @@ class FinalDatabaseScreening:
                     except UnicodeDecodeError:
                         continue
                     except Exception as e:
-                        print(f"   ⚠ Error with {encoding}: {e}")
+                        print(f"    Error with {encoding}: {e}")
                         continue
                         
                 if 'COCONUT' not in databases:
-                    print(f"   ❌ Could not load COCONUT with any encoding")
+                    print(f"    Could not load COCONUT with any encoding")
                         
             except Exception as e:
-                print(f"   ❌ Error loading COCONUT: {e}")
+                print(f"    Error loading COCONUT: {e}")
         
         # Load LOTUS
         lotus_files = glob.glob("*LOTUS*.csv")
         if lotus_files:
             lotus_file = max(lotus_files, key=os.path.getsize)
-            print(f"🪷 Loading LOTUS: {lotus_file}")
+            print(f" Loading LOTUS: {lotus_file}")
             
             try:
                 # Try different encodings for LOTUS
                 for encoding in ['utf-8', 'latin-1', 'cp1252', 'iso-8859-1', 'utf-16']:
                     try:
                         lotus_df = pd.read_csv(lotus_file, encoding=encoding, nrows=2000)
-                        print(f"   ✅ Loaded with {encoding} encoding: {len(lotus_df):,} compounds")
+                        print(f"    Loaded with {encoding} encoding: {len(lotus_df):,} compounds")
                         databases['LOTUS'] = {
                             'data': lotus_df,
                             'compounds': len(lotus_df),
@@ -87,38 +87,38 @@ class FinalDatabaseScreening:
                     except UnicodeDecodeError:
                         continue
                     except Exception as e:
-                        print(f"   ⚠ Error with {encoding}: {e}")
+                        print(f"    Error with {encoding}: {e}")
                         continue
                         
                 if 'LOTUS' not in databases:
-                    print(f"   ❌ Could not load LOTUS with any encoding")
+                    print(f"    Could not load LOTUS with any encoding")
                         
             except Exception as e:
-                print(f"   ❌ Error loading LOTUS: {e}")
+                print(f"    Error loading LOTUS: {e}")
 
         # Load FOODB
         foodb_files = glob.glob("*FOODB*.csv")
         if foodb_files:
             foodb_file = max(foodb_files, key=os.path.getsize)
-            print(f"🍎 Loading FOODB: {foodb_file}")
+            print(f" Loading FOODB: {foodb_file}")
             
             try:
                 foodb_df = pd.read_csv(foodb_file, nrows=2000)
-                print(f"   ✅ Loaded: {len(foodb_df):,} compounds")
+                print(f"    Loaded: {len(foodb_df):,} compounds")
                 databases['FOODB'] = {
                     'data': foodb_df,
                     'compounds': len(foodb_df),
                     'type': 'Food Compounds'
                 }
             except Exception as e:
-                print(f"   ❌ Error loading FOODB: {e}")
+                print(f"    Error loading FOODB: {e}")
         
         self.databases = databases
         return databases
     
     def load_your_models(self):
         """Load your specific model files"""
-        print(f"\n🤖 LOADING YOUR COLORECTAL CANCER MODELS")
+        print(f"\n LOADING YOUR COLORECTAL CANCER MODELS")
         print("=" * 40)
         
         # Your exact model files
@@ -148,24 +148,24 @@ class FinalDatabaseScreening:
                         'description': self.model_info[model_name]['description']
                     }
                     
-                    print(f"   ✅ Loaded successfully ({file_size:.1f}MB)")
+                    print(f"    Loaded successfully ({file_size:.1f}MB)")
                     print(f"      Quality: {self.model_info[model_name]['quality']:.1f}/100")
                     print(f"      Role: {self.model_info[model_name]['description']}")
                     
                 except Exception as e:
-                    print(f"   ❌ Error loading: {e}")
+                    print(f"    Error loading: {e}")
             else:
-                print(f"❌ {model_name}: {filename} not found")
+                print(f" {model_name}: {filename} not found")
         
         if not loaded_models:
-            print("\n❌ No models could be loaded!")
+            print("\n No models could be loaded!")
             print("Available .pkl files in directory:")
             pkl_files = glob.glob("*.pkl")
             for pkl_file in pkl_files:
                 print(f"   - {pkl_file}")
             return None
         
-        print(f"\n✅ Successfully loaded {len(loaded_models)} models:")
+        print(f"\n Successfully loaded {len(loaded_models)} models:")
         sorted_models = sorted(loaded_models.items(), key=lambda x: x[1]['priority'])
         for model_name, info in sorted_models:
             print(f"   {info['priority']}. {model_name}: {info['description']}")
@@ -175,17 +175,17 @@ class FinalDatabaseScreening:
     
     def prepare_screening_data(self):
         """Prepare database data for screening"""
-        print(f"\n🧹 PREPARING DATA FOR SCREENING")
+        print(f"\n PREPARING DATA FOR SCREENING")
         print("=" * 30)
         
         prepared_data = {}
         
         for db_name, db_info in self.databases.items():
-            print(f"\n📊 Preparing {db_name}:")
+            print(f"\n Preparing {db_name}:")
             df = db_info['data'].copy()
             
             if db_name == 'COCONUT':
-                print(f"   🥥 Processing COCONUT natural products...")
+                print(f"    Processing COCONUT natural products...")
                 
                 # Find SMILES column
                 smiles_cols = [col for col in df.columns if 'smiles' in col.lower()]
@@ -216,11 +216,11 @@ class FinalDatabaseScreening:
                             columns=[f'Desc_{i+1}' for i in range(20)]
                         )
                 else:
-                    print(f"   ❌ No SMILES column found in COCONUT")
+                    print(f"    No SMILES column found in COCONUT")
                     continue
             
             elif db_name == 'LOTUS':
-                print(f"   🪷 Processing LOTUS natural products...")
+                print(f"    Processing LOTUS natural products...")
                 
                 # Find SMILES column in LOTUS
                 smiles_cols = [col for col in df.columns if 'smiles' in col.lower()]
@@ -259,7 +259,7 @@ class FinalDatabaseScreening:
                     continue
             
             elif db_name == 'FOODB':
-                print(f"   🍎 Processing FOODB food compounds...")
+                print(f"    Processing FOODB food compounds...")
                 
                 # Find SMILES column
                 smiles_cols = [col for col in df.columns if 'smiles' in col.lower()]
@@ -285,11 +285,11 @@ class FinalDatabaseScreening:
                         columns=[f'Desc_{i+1}' for i in range(30)]
                     )
                 else:
-                    print(f"   ❌ No SMILES column found in FOODB")
+                    print(f"    No SMILES column found in FOODB")
                     continue
             
             # Clean descriptors
-            print(f"      🧹 Cleaning descriptor data...")
+            print(f"       Cleaning descriptor data...")
             descriptors = descriptors.fillna(descriptors.median())
             descriptors = descriptors.replace([np.inf, -np.inf], 0)
             
@@ -300,32 +300,32 @@ class FinalDatabaseScreening:
                 'n_descriptors': len(descriptors.columns)
             }
             
-            print(f"   ✅ Prepared {len(metadata):,} compounds with {len(descriptors.columns)} descriptors")
+            print(f"    Prepared {len(metadata):,} compounds with {len(descriptors.columns)} descriptors")
         
         return prepared_data
     
     def run_virtual_screening(self, prepared_data):
         """Run virtual screening with your models"""
-        print(f"\n🎯 RUNNING VIRTUAL SCREENING")
+        print(f"\n RUNNING VIRTUAL SCREENING")
         print("=" * 30)
         
         screening_results = {}
         
         for db_name, db_data in prepared_data.items():
-            print(f"\n🗄️ SCREENING {db_name} DATABASE:")
+            print(f"\n🗄 SCREENING {db_name} DATABASE:")
             print("-" * 35)
             
             metadata = db_data['metadata']
             descriptors = db_data['descriptors']
             n_compounds = len(metadata)
             
-            print(f"   📊 Compounds: {n_compounds:,}")
-            print(f"   🧪 Descriptors: {db_data['n_descriptors']}")
+            print(f"    Compounds: {n_compounds:,}")
+            print(f"    Descriptors: {db_data['n_descriptors']}")
             
             db_results = {}
             
             for model_name, model_info in self.models.items():
-                print(f"\n   🔬 {model_name} Model:")
+                print(f"\n    {model_name} Model:")
                 print(f"      Quality: {model_info['quality']:.1f}/100")
                 print(f"      Role: {model_info['description']}")
                 
@@ -431,7 +431,7 @@ class FinalDatabaseScreening:
                 top_5_pct = int(n_compounds * 0.05)
                 top_5_threshold = results_df.iloc[top_5_pct-1]['Probability'] if top_5_pct > 0 else top_score
                 
-                print(f"      📊 Results:")
+                print(f"       Results:")
                 print(f"         Active compounds: {n_active:,} ({hit_rate:.1f}%)")
                 print(f"         Score range: {results_df['Probability'].min():.3f} - {top_score:.3f}")
                 print(f"         Mean score: {mean_score:.3f}")
@@ -445,16 +445,16 @@ class FinalDatabaseScreening:
     
     def analyze_consensus_hits(self):
         """Analyze consensus hits across models"""
-        print(f"\n🤝 CONSENSUS HIT ANALYSIS")
+        print(f"\n CONSENSUS HIT ANALYSIS")
         print("=" * 25)
         
         consensus_results = {}
         
         for db_name, db_results in self.screening_results.items():
-            print(f"\n📊 {db_name} CONSENSUS:")
+            print(f"\n {db_name} CONSENSUS:")
             
             if len(db_results) < 2:
-                print("   ⚠ Need multiple models for consensus")
+                print("    Need multiple models for consensus")
                 continue
             
             # Find compounds common to all models
@@ -466,7 +466,7 @@ class FinalDatabaseScreening:
                 else:
                     common_compounds = common_compounds.intersection(compound_set)
             
-            print(f"   📊 Common compounds: {len(common_compounds):,}")
+            print(f"    Common compounds: {len(common_compounds):,}")
             
             # Calculate consensus metrics
             consensus_data = []
@@ -506,11 +506,11 @@ class FinalDatabaseScreening:
             high_consensus = consensus_df[consensus_df['Mean_Score'] >= 0.6]
             consensus_active = consensus_df['Consensus_Active'].sum()
             
-            print(f"   🎯 High consensus (≥0.6): {len(high_consensus):,}")
-            print(f"   ✅ Consensus active: {consensus_active:,}")
+            print(f"    High consensus (≥0.6): {len(high_consensus):,}")
+            print(f"    Consensus active: {consensus_active:,}")
             
             # Show top 10 consensus hits
-            print(f"   🏆 Top 10 consensus hits:")
+            print(f"    Top 10 consensus hits:")
             for i, (_, row) in enumerate(consensus_df.head(10).iterrows(), 1):
                 name = row['Compound_Name']
                 mean_score = row['Mean_Score']
@@ -528,7 +528,7 @@ class FinalDatabaseScreening:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_file = f'Natural_Product_Screening_Results_{timestamp}.xlsx'
         
-        print(f"\n💾 SAVING SCREENING RESULTS")
+        print(f"\n SAVING SCREENING RESULTS")
         print("=" * 28)
         
         with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
@@ -572,22 +572,22 @@ class FinalDatabaseScreening:
             summary_df = pd.DataFrame(summary_data)
             summary_df.to_excel(writer, sheet_name='Summary', index=False)
         
-        print(f"✅ Results saved: {output_file}")
+        print(f" Results saved: {output_file}")
         return output_file
     
     def generate_final_report(self, consensus_results):
         """Generate final screening report"""
-        print(f"\n📋 FINAL SCREENING REPORT")
+        print(f"\n FINAL SCREENING REPORT")
         print("=" * 25)
         
-        print(f"🎉 NATURAL PRODUCT SCREENING COMPLETE!")
+        print(f" NATURAL PRODUCT SCREENING COMPLETE")
         print("=" * 45)
         
         # Overall statistics
         total_databases = len(self.databases)
         total_models = len(self.models)
         
-        print(f"📊 SCREENING OVERVIEW:")
+        print(f" SCREENING OVERVIEW:")
         print(f"   Databases screened: {total_databases}")
         print(f"   Models applied: {total_models}")
         
@@ -597,13 +597,13 @@ class FinalDatabaseScreening:
             consensus_active = consensus_df['Consensus_Active'].sum()
             best_hit = consensus_df.iloc[0]
             
-            print(f"\n📊 {db_name} RESULTS:")
+            print(f"\n {db_name} RESULTS:")
             print(f"   Total consensus compounds: {len(consensus_df):,}")
             print(f"   High-scoring hits (≥0.7): {len(high_scoring):,}")
             print(f"   Consensus active: {consensus_active:,}")
             print(f"   Best hit: {best_hit['Compound_Name']} ({best_hit['Mean_Score']:.3f})")
         
-        print(f"\n🎯 NEXT STEPS:")
+        print(f"\n NEXT STEPS:")
         print("1. Review top consensus hits for experimental validation")
         print("2. Focus on compounds with scores ≥0.7")
         print("3. Prioritize natural products (COCONUT) for novelty")
@@ -612,7 +612,7 @@ class FinalDatabaseScreening:
 
 def main():
     """Main screening pipeline"""
-    print("🧬 FINAL DATABASE SCREENING PIPELINE")
+    print(" FINAL DATABASE SCREENING PIPELINE")
     print("=" * 40)
     print("Screen natural product databases with your validated models")
     print()
@@ -622,7 +622,7 @@ def main():
     # Load databases
     databases = screener.load_databases()
     if not databases:
-        print("❌ No databases could be loaded!")
+        print(" No databases could be loaded!")
         return
     
     # Load your models
@@ -633,7 +633,7 @@ def main():
     # Prepare data
     prepared_data = screener.prepare_screening_data()
     if not prepared_data:
-        print("❌ No data could be prepared!")
+        print(" No data could be prepared!")
         return
     
     # Run screening
@@ -648,12 +648,12 @@ def main():
     # Generate report
     screener.generate_final_report(consensus_results)
     
-    print(f"\n🎉 SCREENING PIPELINE COMPLETE!")
+    print(f"\n SCREENING PIPELINE COMPLETE")
     print("=" * 32)
-    print(f"✅ Successfully screened natural product databases")
-    print(f"✅ Applied validated colorectal cancer models") 
-    print(f"✅ Generated consensus hit recommendations")
-    print(f"✅ Results saved: {output_file}")
+    print(f" Successfully screened natural product databases")
+    print(f" Applied validated colorectal cancer models") 
+    print(f" Generated consensus hit recommendations")
+    print(f" Results saved: {output_file}")
 
 if __name__ == "__main__":
     main()
