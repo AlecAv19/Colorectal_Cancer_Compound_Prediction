@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Aug 20 22:59:16 2025
-
-@author: ASUS TUF F15
-"""
-"""
 Simple Multi-Model Virtual Screening Comparison
 No graphics dependencies - pure pandas analysis
 """
