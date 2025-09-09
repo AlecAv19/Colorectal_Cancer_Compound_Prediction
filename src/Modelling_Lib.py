@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Nov 2024
 
 Simple GA-Modeling for binary outcome and smiles input.
 Library of functions
 
-@author: edu
 """
 
 import numpy as np
