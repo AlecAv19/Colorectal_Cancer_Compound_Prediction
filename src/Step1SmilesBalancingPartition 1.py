@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jul 10 10:05:16 2025
-
-@author: Eduardo Tejera
-
 This code is part of the Pipeline-Codes
 Part 1. Smiles Processing and Balancing
 
