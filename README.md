@@ -16,7 +16,23 @@ This pipeline implements a complete virtual screening workflow including SMILES 
 #### - Natural Product Focus: COCONUT, LOTUS, and FOODB database support
 
 ### Step 1: SMILES Processing and Data Balancing
-´´´bash
+
+```
 python Step1SmilesBalancingPartition.py -i input_file.txt -p Step1ParamFile.txt
-´´´
+```
+#### - Sanitizes and validates SMILES structures
+#### - Computes molecular descriptors
+#### - Balances datasets using clustering
+#### - Creates train/test/external splits
+
+### Step 2: Data Preprocessing
+
+```
+python Step2DataProcessing1.py -i training_file.txt -p Step2ParamFile.txt
+```
+#### - Data normalization (StandardScaler)
+#### - Feature selection and reduction
+#### - Saves preprocessing parameters for consistency
+
+
 
