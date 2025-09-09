@@ -1,0 +1,2 @@
+*.csv filter=lfs diff=lfs merge=lfs -text
+docs/Food_Databases/*.csv filter=lfs diff=lfs merge=lfs -text
